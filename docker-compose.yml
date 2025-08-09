@@ -1,0 +1,19 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: todo_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  todo-app:
+    build: .
+    ports:
+      - "10279:8080"
+    depends_on:
+      - mysql-db
+    command: ["sh", "-c", "until nc -z mysql-db 3306; do echo 'Waiting for MySQL...'; sleep 2; done && java -jar /app.jar"]
+
+volumes:
+  mysql-data:
